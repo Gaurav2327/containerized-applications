@@ -20,7 +20,7 @@ jobs:
       - name: scan image
         uses: aquasecurity/trivy-action@0.25.0
         with:
-          image: ${{ secrets.DOCKER_USER }}/myapp:${{ github.sha }}
+          image-ref: ${{ secrets.DOCKER_USER }}/myapp:${{ github.sha }}
           format: 'table'
           severity: 'CRITICAL,HIGH'
 
