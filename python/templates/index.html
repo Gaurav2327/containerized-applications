@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Gaurav Dhapola{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h1>Gaurav Dhapola</h1>
+    <p class="subtitle">A Flask-based containerized application</p>
+    <p class="time">Current Server Time: {{ current_time.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+</div>
+
+<div class="features">
+    <div class="feature-card">
+        <h3>🚀 Connect with GitHub</h3>
+        <a href="https://github.com/Gaurav2327" class="btn btn-primary">GitHub</a>
+    </div>
+    <div class="feature-card">
+        <h3>📝 LinkedIn</h3>
+        <a href="https://www.linkedin.com/in/gaurav-dhapola-4ba386151" class="btn btn-primary">LinkedIn</a>
+    </div>
+    <div class="feature-card">
+        <h3>🔌 REST API</h3>
+        <p>Full RESTful API for programmatic access</p>
+    </div>
+</div>
+
+<div class="cta">
+    <a href="/tasks" class="btn btn-primary">View Tasks</a>
+    <a href="/about" class="btn btn-secondary">Learn More</a>
+</div>
+{% endblock %}
+

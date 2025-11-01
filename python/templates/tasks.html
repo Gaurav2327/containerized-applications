@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Tasks - Gaurav Dhapola{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Task Manager</h1>
+    <p>Manage your tasks efficiently</p>
+</div>
+
+<div class="task-container">
+    <div class="add-task-form">
+        <h3>Add New Task</h3>
+        <form id="addTaskForm">
+            <input type="text" id="taskInput" placeholder="Enter task title..." required>
+            <button type="submit" class="btn btn-primary">Add Task</button>
+        </form>
+    </div>
+
+    <div class="tasks-list">
+        <h3>Your Tasks</h3>
+        <div id="tasksList">
+            {% for task in tasks %}
+            <div class="task-item {% if task.completed %}completed{% endif %}" data-id="{{ task.id }}">
+                <div class="task-content">
+                    <input type="checkbox" 
+                           {% if task.completed %}checked{% endif %}
+                           onchange="toggleTask({{ task.id }}, this.checked)">
+                    <span class="task-title">{{ task.title }}</span>
+                </div>
+                <button class="btn-delete" onclick="deleteTask({{ task.id }})">Delete</button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Add new task
+    document.getElementById('addTaskForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const input = document.getElementById('taskInput');
+        const title = input.value.trim();
+        
+        if (!title) return;
+
+        try {
+            const response = await fetch('/api/tasks', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ title }),
+            });
+
+            if (response.ok) {
+                input.value = '';
+                location.reload();
+            }
+        } catch (error) {
+            console.error('Error adding task:', error);
+            alert('Failed to add task');
+        }
+    });
+
+    // Toggle task completion
+    async function toggleTask(taskId, completed) {
+        try {
+            const response = await fetch(`/api/tasks/${taskId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ completed }),
+            });
+
+            if (response.ok) {
+                const taskItem = document.querySelector(`[data-id="${taskId}"]`);
+                if (completed) {
+                    taskItem.classList.add('completed');
+                } else {
+                    taskItem.classList.remove('completed');
+                }
+            }
+        } catch (error) {
+            console.error('Error updating task:', error);
+            alert('Failed to update task');
+        }
+    }
+
+    // Delete task
+    async function deleteTask(taskId) {
+        if (!confirm('Are you sure you want to delete this task?')) return;
+
+        try {
+            const response = await fetch(`/api/tasks/${taskId}`, {
+                method: 'DELETE',
+            });
+
+            if (response.ok) {
+                location.reload();
+            }
+        } catch (error) {
+            console.error('Error deleting task:', error);
+            alert('Failed to delete task');
+        }
+    }
+</script>
+{% endblock %}
+
