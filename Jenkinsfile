@@ -1,7 +1,7 @@
 pipeline {
     agent any
     parameters {
-        choice (name: 'ENVIRONMENT', choices: ['dev','staging','pre-prod','prod',description:'Deployment Environment'])
+        choice (name: 'ENVIRONMENT', choices: ['dev','staging','pre-prod','prod'],description:'Deployment Environment')
         choice (name: 'ACTION', choices: ['PLAN','APPLY'],description: 'Terraform Action')
     }
     environment {
