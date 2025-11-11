@@ -5,7 +5,7 @@ resource "aws_ecs_cluster" "application_ecs" {
     name  = "containerInsights"
     value = "enabled"
   }
-  tags = merge(local.default_tags,{
+  tags = merge(local.default_tags, {
     Name = var.ecs_cluster
   })
 }
@@ -20,18 +20,24 @@ resource "aws_ecs_task_definition" "application_task_def" {
     {
       name      = "portfolio"
       image     = var.image
-      cpu       = 10
-      memory    = 512
+      cpu       = 256
+      memory    = 256
       essential = true
       portMappings = [
         {
-          containerPort = 80
-          hostPort      = 80
+          containerPort = 5000
+          hostPort      = 5000
         }
       ]
     }
   ])
-  task_role_arn = ""
+  task_role_arn            = aws_iam_role.task_execution_role.arn
+  execution_role_arn       = aws_iam_role.task_execution_role.arn
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = "256"
+  memory                   = "512"
+  network_mode             = "awsvpc"
+
 }
 
 #####################################
@@ -43,22 +49,16 @@ resource "aws_ecs_service" "application_service" {
   cluster         = aws_ecs_cluster.application_ecs.id
   task_definition = aws_ecs_task_definition.application_task_def.arn
   desired_count   = 1
-  //iam_role        = aws_iam_role.iam.arn
-  //depends_on      = [aws_iam_role_policy.]
-
-  ordered_placement_strategy {
-    type  = "binpack"
-    field = "cpu"
-  }
 
   capacity_provider_strategy {
     capacity_provider = "FARGATE"
-    base = 1
-    weight = 1
+    base              = 0
+    weight            = 1
   }
 
   network_configuration {
-    subnets = []
-    security_groups = []
+    subnets          = data.aws_subnets.public_subnets.ids
+    security_groups  = [module.ecs_eg.security_group_id]
+    assign_public_ip = true
   }
 }
