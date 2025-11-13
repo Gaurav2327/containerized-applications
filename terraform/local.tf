@@ -1,5 +1,5 @@
 locals {
-  region = "us-east-1"
+  region = "us-east-2"
   default_tags = {
     resource = "ecs"
     stack    = "github-resources"

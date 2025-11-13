@@ -221,3 +221,7 @@ __marimo__/
 Thumbs.db
 
 .flaskenv
+
+# terraform
+.terraform*
+terraform.*
