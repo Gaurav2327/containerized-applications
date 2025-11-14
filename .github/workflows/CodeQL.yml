@@ -1,4 +1,4 @@
-name: "CodeQL"
+name: "SAST"
 
 on:
   push:
@@ -26,3 +26,22 @@ jobs:
           project-path: ./python
       - uses: github/codeql-action/autobuild@v3
       - uses: github/codeql-action/analyze@v3
+
+  sonar-scan:
+    name: SonarQube SAST
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: set up python code
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: sonarqube scan
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: https://sonarcloud.io
