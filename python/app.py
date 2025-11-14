@@ -7,7 +7,7 @@ app = Flask(__name__)
 tasks = [
     {"id": 1, "title": "Build flask app", "completed": True},
     {"id": 2, "title": "Build a containerized app", "completed": False},
-    {"id": 3, "title": "Deploy to ecs", "completed": False}
+    {"id": 3, "title": "Deploy to ECS Cluster", "completed": False}
 ]
 
 @app.route('/')
