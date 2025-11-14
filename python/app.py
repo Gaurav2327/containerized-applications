@@ -5,9 +5,9 @@ app = Flask(__name__)
 
 # Sample data
 tasks = [
-    {"id": 1, "title": "Learn Flask", "completed": True},
-    {"id": 2, "title": "Build a web app", "completed": False},
-    {"id": 3, "title": "Deploy to production", "completed": False}
+    {"id": 1, "title": "Build flask app", "completed": True},
+    {"id": 2, "title": "Build a containerized app", "completed": False},
+    {"id": 3, "title": "Deploy to ecs", "completed": False}
 ]
 
 @app.route('/')
