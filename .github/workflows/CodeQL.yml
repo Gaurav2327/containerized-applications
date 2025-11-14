@@ -38,8 +38,17 @@ jobs:
         with:
           python-version: "3.10"
 
-      - name: sonarqube scan (push)
-        if: github.event_name == 'push'
+      - name: install dependencies
+        run: |
+          cd python
+          pip install -r ../requirements.txt
+
+      - name: run tests with coverage
+        run: |
+          cd python
+          pytest --cov=. --cov-report=xml --cov-report=term
+
+      - name: sonarqube scan
         uses: SonarSource/sonarqube-scan-action@2f77a1ec69fb1d595b06f35ab27e97605bdef703
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -48,5 +57,9 @@ jobs:
           args: >
             -Dsonar.projectKey=containerized-applications
             -Dsonar.projectName=containerized-applications
+            -Dsonar.organization=Gaurav2327
             -Dsonar.sources=./python
-            -Dsonar.python-version=3.10
+            -Dsonar.tests=./python
+            -Dsonar.test.inclusions=**/*test*.py
+            -Dsonar.python.coverage.reportPaths=./python/coverage.xml
+            -Dsonar.python.version=3.10
