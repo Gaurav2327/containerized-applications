@@ -39,7 +39,7 @@ jobs:
           python-version: "3.10"
 
       - name: sonarqube scan
-        uses: SonarSource/sonarqube-scan-action@cf5ff316889d418d8a38334eb703ed253ca957a0
+        uses: SonarSource/sonarqube-scan-action@8fd98eebd4c693bedae9c2ce45d6edc9ff2830fa
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: https://sonarcloud.io
