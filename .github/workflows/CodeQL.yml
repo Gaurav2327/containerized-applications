@@ -1,6 +1,8 @@
 name: "SAST"
 
 on:
+  push:
+    branches: ["main", "master", "sast-integration"]
   pull_request:
     branches: ["**"]
 
@@ -38,7 +40,8 @@ jobs:
         with:
           python-version: "3.10"
 
-      - name: sonarqube scan
+      - name: sonarqube scan (push)
+        if: github.event_name == 'push'
         uses: SonarSource/sonarqube-scan-action@2f77a1ec69fb1d595b06f35ab27e97605bdef703
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -49,3 +52,19 @@ jobs:
             -Dsonar.organization=Gaurav2327
             -Dsonar.sources=./python
             -Dsonar.python-version=3.10
+
+      - name: sonarqube scan (pull request)
+        if: github.event_name == 'pull_request'
+        uses: SonarSource/sonarqube-scan-action@2f77a1ec69fb1d595b06f35ab27e97605bdef703
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: https://sonarcloud.io
+        with:
+          args: >
+            -Dsonar.projectKey=containerized-applications
+            -Dsonar.organization=Gaurav2327
+            -Dsonar.sources=./python
+            -Dsonar.python-version=3.10
+            -Dsonar.pullrequest.key=${{ github.event.pull_request.number }}
+            -Dsonar.pullrequest.branch=${{ github.head_ref }}
+            -Dsonar.pullrequest.base=${{ github.base_ref }}
