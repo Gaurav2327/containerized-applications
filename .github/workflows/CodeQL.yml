@@ -39,19 +39,22 @@ jobs:
           python-version: "3.10"
 
       - name: install dependencies
-        run: |
-          cd python
-          pip install -r ../requirements.txt
+        run: pip install -r requirements.txt
 
       - name: run tests with coverage
         run: |
           cd python
-          pytest --cov=app --cov-report=xml:coverage.xml --cov-report=term
+          pytest --cov=. --cov-report=xml:../coverage.xml --cov-report=term -v
+        continue-on-error: false
 
-      - name: verify coverage file
+      - name: verify and fix coverage paths
         run: |
-          ls -la python/coverage.xml
-          cat python/coverage.xml
+          ls -la coverage.xml
+          echo "Original coverage.xml paths:"
+          grep -o 'filename="[^"]*"' coverage.xml | head -5
+          sed -i 's|filename="|filename="python/|g' coverage.xml
+          echo "Fixed coverage.xml paths:"
+          grep -o 'filename="[^"]*"' coverage.xml | head -5
 
       - name: sonarqube scan
         uses: SonarSource/sonarqube-scan-action@2f77a1ec69fb1d595b06f35ab27e97605bdef703
@@ -63,9 +66,8 @@ jobs:
             -Dsonar.projectKey=Gaurav2327_containerized-applications
             -Dsonar.projectName=containerized-applications
             -Dsonar.organization=gaurav2327
-            -Dsonar.sources=python
-            -Dsonar.exclusions=**/*test*.py,**/test_*.py,**/*.pyc,**/__pycache__/**
-            -Dsonar.tests=python
-            -Dsonar.test.inclusions=**/*test*.py,**/test_*.py
-            -Dsonar.python.coverage.reportPaths=python/coverage.xml
+            -Dsonar.sources=python/app.py
+            -Dsonar.tests=python/test_app.py
+            -Dsonar.python.coverage.reportPaths=coverage.xml
             -Dsonar.python.version=3.10
+            -Dsonar.sourceEncoding=UTF-8
