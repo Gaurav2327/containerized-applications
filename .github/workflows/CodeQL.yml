@@ -46,7 +46,12 @@ jobs:
       - name: run tests with coverage
         run: |
           cd python
-          pytest --cov=. --cov-report=xml --cov-report=term
+          pytest --cov=app --cov-report=xml:coverage.xml --cov-report=term
+
+      - name: verify coverage file
+        run: |
+          ls -la python/coverage.xml
+          cat python/coverage.xml
 
       - name: sonarqube scan
         uses: SonarSource/sonarqube-scan-action@2f77a1ec69fb1d595b06f35ab27e97605bdef703
@@ -58,8 +63,9 @@ jobs:
             -Dsonar.projectKey=Gaurav2327_containerized-applications
             -Dsonar.projectName=containerized-applications
             -Dsonar.organization=gaurav2327
-            -Dsonar.sources=./python
-            -Dsonar.tests=./python
-            -Dsonar.test.inclusions=**/*test*.py
-            -Dsonar.python.coverage.reportPaths=./python/coverage.xml
+            -Dsonar.sources=python
+            -Dsonar.exclusions=**/*test*.py,**/test_*.py,**/*.pyc,**/__pycache__/**
+            -Dsonar.tests=python
+            -Dsonar.test.inclusions=**/*test*.py,**/test_*.py
+            -Dsonar.python.coverage.reportPaths=python/coverage.xml
             -Dsonar.python.version=3.10
