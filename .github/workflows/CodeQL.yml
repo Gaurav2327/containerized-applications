@@ -55,8 +55,9 @@ jobs:
           SONAR_HOST_URL: https://sonarcloud.io
         with:
           args: >
-            -Dsonar.projectKey=containerized-applications
+            -Dsonar.projectKey=Gaurav2327_containerized-applications
             -Dsonar.projectName=containerized-applications
+            -Dsonar.organization=gaurav2327
             -Dsonar.sources=./python
             -Dsonar.tests=./python
             -Dsonar.test.inclusions=**/*test*.py
