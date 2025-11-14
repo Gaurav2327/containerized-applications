@@ -46,5 +46,6 @@ jobs:
         with:
           args: >
             -Dsonar.projectKey=containerized-applications
+            -Dsonar.organization=Gaurav2327
             -Dsonar.sources=./python
             -Dsonar.python-version=3.10
