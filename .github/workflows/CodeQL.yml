@@ -1,0 +1,73 @@
+name: "SAST"
+
+on:
+  pull_request:
+    branches: ["**"]
+
+permissions:
+  security-events: write
+  actions: read
+  contents: read
+
+jobs:
+  codeQL-analyze:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'python']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          project-path: ./python
+      - uses: github/codeql-action/autobuild@v3
+      - uses: github/codeql-action/analyze@v3
+
+  sonar-scan:
+    name: SonarQube SAST
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: set up python code
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: install dependencies
+        run: pip install -r requirements.txt
+
+      - name: run tests with coverage
+        run: |
+          cd python
+          pytest --cov=. --cov-report=xml:../coverage.xml --cov-report=term -v
+        continue-on-error: false
+
+      - name: verify and fix coverage paths
+        run: |
+          ls -la coverage.xml
+          echo "Original coverage.xml paths:"
+          grep -o 'filename="[^"]*"' coverage.xml | head -5
+          sed -i 's|filename="|filename="python/|g' coverage.xml
+          echo "Fixed coverage.xml paths:"
+          grep -o 'filename="[^"]*"' coverage.xml | head -5
+
+      - name: sonarqube scan
+        uses: SonarSource/sonarqube-scan-action@2f77a1ec69fb1d595b06f35ab27e97605bdef703
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: https://sonarcloud.io
+        with:
+          args: >
+            -Dsonar.projectKey=Gaurav2327_containerized-applications
+            -Dsonar.projectName=containerized-applications
+            -Dsonar.organization=gaurav2327
+            -Dsonar.sources=python/app.py
+            -Dsonar.tests=python/test_app.py
+            -Dsonar.python.coverage.reportPaths=coverage.xml
+            -Dsonar.python.version=3.10
+            -Dsonar.sourceEncoding=UTF-8
